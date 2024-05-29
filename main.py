@@ -106,7 +106,8 @@ def send_product_data_to_telegram(product_name, product_status, image_url,produc
 
 # Main function to run the code
 def main():
-    last_perv_sent=last_sent
+    last_perv_sent = last_sent
+    consecutive_available_count = 0
     
     while True:
         url = "https://www.dzrt.com/ar/our-products.html"
@@ -118,17 +119,21 @@ def main():
             for product_link in product_links:
                 product_name, product_status, image_url = extract_product_details(product_link)
                 if product_name and product_name == "إيدجي منت":
-                    if product_status in ["متوفر", "سيتم توفيرها في المخزون قريباً"]:
-                       
-                       if last_sent!=last_perv_sent :
-                         
-                           send_product_data_to_telegram(product_name, product_status, image_url, product_link)
-                           last_perv_sent=last_sent
-                           
+                    if product_status == "متوفر":
+                        # Send product data 3 times consecutively
+                        if consecutive_available_count < 3:
+                            send_product_data_to_telegram(product_name, product_status, image_url, product_link)
+                            consecutive_available_count += 1
+                    elif product_status == "سيتم توفيرها في المخزون قريباً":
+                        # Reset consecutive count when status changes
+                        consecutive_available_count = 0
+                        # Send product data only once when status changes
+                        if last_sent != last_perv_sent:
+                            send_product_data_to_telegram(product_name, product_status, image_url, product_link)
                     break
 
         # Wait for 20 seconds before checking again
-        time.sleep(20)
+        time.sleep(5)
 
 if __name__ == "__main__":
     main()
