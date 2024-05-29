@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
-# Variable to store the time of the last clearing of the sent_products list
+# Variable to store the time of the last clearing of the sent_products list j
 last_clear_time = time.time()
 last_sent=''
 
